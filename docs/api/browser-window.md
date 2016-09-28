@@ -665,42 +665,26 @@ height areas you have within the overall content view.
 
 #### `win.setBounds(options[, animate])`
 
-* `options` Object
-  * `x` Integer
-  * `y` Integer
-  * `width` Integer
-  * `height` Integer
+* `options` [Bounds](structures/bounds.md)
 * `animate` Boolean (optional) _macOS_
 
-Resizes and moves the window to `width`, `height`, `x`, `y`.
+Resizes and moves the window to the supplied bounds
 
 #### `win.getBounds()`
 
-Returns `Object`:
-* `width` Integer
-* `height` Integer
-* `x` Integer
-* `y` Integer
+Returns `Bounds` - A [`Bounds`](structures/bounds.md) object
 
 #### `win.setContentBounds(options[, animate])`
 
-* `options` Object
-  * `x` Integer
-  * `y` Integer
-  * `width` Integer
-  * `height` Integer
+* `options` [Bounds](structures/bounds.md)
 * `animate` Boolean (optional) _macOS_
 
 Resizes and moves the window's client area (e.g. the web page) to
-`width`, `height`, `x`, `y`.
+the supplied bounds.
 
 #### `win.getContentBounds()`
 
-Returns `Object`:
-* `width` Integer
-* `height` Integer
-* `x` Integer
-* `y` Integer
+Returns `Bounds` - A [`Bounds`](structures/bounds.md) object
 
 Returns an object that contains the window's client area (e.g. the web page)
 width, height, x and y values.
@@ -962,11 +946,7 @@ Whether `Boolean` - Whether the window's document has been edited.
 
 #### `win.capturePage([rect, ]callback)`
 
-* `rect` Object (optional) - The area of the page to be captured
-  * `x` Integer
-  * `y` Integer
-  * `width` Integer
-  * `height` Integer
+* `rect` [Bounds](structures/bounds.md) - The bounds to capture
 * `callback` Function
 
 Same as `webContents.capturePage([rect, ]callback)`.
@@ -1055,7 +1035,9 @@ On Windows and Linux always returns
 
 #### `win.setThumbarButtons(buttons)` _Windows_
 
-* `buttons` Array
+* `buttons` ThumbarButton[]
+
+Returns `Boolean` - Whether the buttons were added successfully
 
 Add a thumbnail toolbar with a specified set of buttons to the thumbnail image
 of a window in a taskbar button layout. Returns a `Boolean` object indicates
@@ -1066,36 +1048,11 @@ the limited room. Once you setup the thumbnail toolbar, the toolbar cannot be
 removed due to the platform's limitation. But you can call the API with an empty
 array to clean the buttons.
 
-The `buttons` is an array of `Button` objects:
-
-* `Button` Object
-  * `icon` [NativeImage](native-image.md) - The icon showing in thumbnail
-    toolbar.
-  * `click` Function
-  * `tooltip` String (optional) - The text of the button's tooltip.
-  * `flags` Array (optional) - Control specific states and behaviors of the
-    button. By default, it is `['enabled']`.
-
-The `flags` is an array that can include following `String`s:
-
-* `enabled` - The button is active and available to the user.
-* `disabled` - The button is disabled. It is present, but has a visual state
-  indicating it will not respond to user action.
-* `dismissonclick` - When the button is clicked, the thumbnail window closes
-  immediately.
-* `nobackground` - Do not draw a button border, use only the image.
-* `hidden` - The button is not shown to the user.
-* `noninteractive` - The button is enabled but not interactive; no pressed
-  button state is drawn. This value is intended for instances where the button
-  is used in a notification.
+The `buttons` is an array of [`ThumbarButton`](structures/thumbar-button.md) objects:
 
 #### `win.setThumbnailClip(region)` _Windows_
 
-* `region` Object - Region of the window
-  * `x` Integer - x-position of region
-  * `y` Integer - y-position of region
-  * `width` Integer - width of region
-  * `height` Integer - height of region
+* `region` [Bounds](structures/bounds.md) - Region of the window
 
 Sets the region of the window to show as the thumbnail image displayed when
 hovering over the window in the taskbar. You can reset the thumbnail to be

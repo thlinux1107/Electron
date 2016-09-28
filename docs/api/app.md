@@ -184,14 +184,7 @@ Returns:
 * `webContents` [WebContents](web-contents.md)
 * `url` URL
 * `error` String - The error code
-* `certificate` Object
-  * `data` String - PEM encoded data
-  * `issuerName` String - Issuer's Common Name
-  * `subjectName` String - Subject's Common Name
-  * `serialNumber` String - Hex value represented string
-  * `validStart` Integer - Start date of the certificate being valid in seconds
-  * `validExpiry` Integer - End date of the certificate being valid in seconds
-  * `fingerprint` String - Fingerprint of the certificate
+* `certificate` [Certificate](structures/certificate.md)
 * `callback` Function
 
 Emitted when failed to verify the `certificate` for `url`, to trust the
@@ -219,14 +212,7 @@ Returns:
 * `event` Event
 * `webContents` [WebContents](web-contents.md)
 * `url` URL
-* `certificateList` [Objects]
-  * `data` String - PEM encoded data
-  * `issuerName` String - Issuer's Common Name
-  * `subjectName` String - Subject's Common Name
-  * `serialNumber` String - Hex value represented string
-  * `validStart` Integer - Start date of the certificate being valid in seconds
-  * `validExpiry` Integer - End date of the certificate being valid in seconds
-  * `fingerprint` String - Fingerprint of the certificate
+* `certificateList` Certificate[]
 * `callback` Function
 
 Emitted when a client certificate is requested.
@@ -522,26 +508,9 @@ The API uses the Windows Registry and LSCopyDefaultHandlerForURLScheme internall
 
 ### `app.setUserTasks(tasks)` _Windows_
 
-* `tasks` Array - Array of `Task` objects
+* `tasks` Task[] - Array of [`Task`](structures/task.md) objects
 
 Adds `tasks` to the [Tasks][tasks] category of the JumpList on Windows.
-
-`tasks` is an array of `Task` objects in the following format:
-
-`Task` Object:
-
-* `program` String - Path of the program to execute, usually you should
-  specify `process.execPath` which opens the current program.
-* `arguments` String - The command line arguments when `program` is
-  executed.
-* `title` String - The string to be displayed in a JumpList.
-* `description` String - Description of this task.
-* `iconPath` String - The absolute path to an icon to be displayed in a
-  JumpList, which can be an arbitrary resource file that contains an icon. You
-  can usually specify `process.execPath` to show the icon of the program.
-* `iconIndex` Integer - The icon index in the icon file. If an icon file
-  consists of two or more icons, set this value to identify the icon. If an
-  icon file consists of one icon, this value is 0.
 
 Returns `true` when the call succeeded, otherwise returns `false`.
 
@@ -554,7 +523,7 @@ Returns `Object`:
 * `minItems` Integer - The minimum number of items that will be shown in the
   Jump List (for a more detailed description of this value see the
   [MSDN docs][JumpListBeginListMSDN]).
-* `removedItems` Array - Array of `JumpListItem` objects that correspond to
+* `removedItems` JumpListItem[] - Array of [`JumpListItem`](structures/jump-list-item.md) objects that correspond to
   items that the user has explicitly removed from custom categories in the
   Jump List. These items must not be re-added to the Jump List in the **next**
   call to `app.setJumpList()`, Windows will not display any custom category
@@ -562,7 +531,7 @@ Returns `Object`:
 
 ### `app.setJumpList(categories)` _Windows_
 
-* `categories` Array or `null` - Array of `JumpListCategory` objects.
+* `categories` JumpListCategory[] or `null` - Array of [`JumpListCategory`](structures/jump-list-category.md) objects.
 
 Sets or removes a custom Jump List for the application, and returns one of the
 following strings:
@@ -581,63 +550,12 @@ following strings:
 If `categories` is `null` the previously set custom Jump List (if any) will be
 replaced by the standard Jump List for the app (managed by Windows).
 
-`JumpListCategory` objects should have the following properties:
-
-* `type` String - One of the following:
-  * `tasks` - Items in this category will be placed into the standard `Tasks`
-    category. There can be only one such category, and it will always be
-    displayed at the bottom of the Jump List.
-  * `frequent` - Displays a list of files frequently opened by the app, the
-    name of the category and its items are set by Windows.
-  * `recent` - Displays a list of files recently opened by the app, the name
-    of the category and its items are set by Windows. Items may be added to
-    this category indirectly using `app.addRecentDocument(path)`.
-  * `custom` - Displays tasks or file links, `name` must be set by the app.
-* `name` String - Must be set if `type` is `custom`, otherwise it should be
-  omitted.
-* `items` Array - Array of `JumpListItem` objects if `type` is `tasks` or
-  `custom`, otherwise it should be omitted.
-
-**Note:** If a `JumpListCategory` object has neither the `type` nor the `name`
-property set then its `type` is assumed to be `tasks`. If the `name` property
-is set but the `type` property is omitted then the `type` is assumed to be
-`custom`.
-
 **Note:** Users can remove items from custom categories, and Windows will not
 allow a removed item to be added back into a custom category until **after**
 the next successful call to `app.setJumpList(categories)`. Any attempt to
 re-add a removed item to a custom category earlier than that will result in the
 entire custom category being omitted from the Jump List. The list of removed
 items can be obtained using `app.getJumpListSettings()`.
-
-`JumpListItem` objects should have the following properties:
-
-* `type` String - One of the following:
-  * `task` - A task will launch an app with specific arguments.
-  * `separator` - Can be used to separate items in the standard `Tasks`
-    category.
-  * `file` - A file link will open a file using the app that created the
-    Jump List, for this to work the app must be registered as a handler for
-    the file type (though it doesn't have to be the default handler).
-* `path` String - Path of the file to open, should only be set if `type` is
-  `file`.
-* `program` String - Path of the program to execute, usually you should
-  specify `process.execPath` which opens the current program. Should only be
-  set if `type` is `task`.
-* `args` String - The command line arguments when `program` is executed. Should
-  only be set if `type` is `task`.
-* `title` String - The text to be displayed for the item in the Jump List.
-  Should only be set if `type` is `task`.
-* `description` String - Description of the task (displayed in a tooltip).
-  Should only be set if `type` is `task`.
-* `iconPath` String - The absolute path to an icon to be displayed in a
-  Jump List, which can be an arbitrary resource file that contains an icon
-  (e.g. `.ico`, `.exe`, `.dll`). You can usually specify `process.execPath` to
-  show the program icon.
-* `iconIndex` Integer - The index of the icon in the resource file. If a
-  resource file contains multiple icons this value can be used to specify the
-  zero-based index of the icon that should be displayed for this task. If a
-  resource file contains only one icon, this property should be set to zero.
 
 Here's a very simple example of creating a custom Jump List:
 
